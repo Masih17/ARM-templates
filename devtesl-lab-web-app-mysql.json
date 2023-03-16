@@ -1,0 +1,135 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "siteName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Azure Web App."
+            }
+        },
+        "appServicePlanName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the App Service Plan."
+            }
+        },
+        "skuName": {
+            "type": "string",
+            "metadata": {
+                "description": "SKU name of the App Service Plan."
+            }
+        },
+        "skuCapacity": {
+            "type": "int",
+            "metadata": {
+                "description": "SKU capacity of the App Service Plan."
+            }
+        },
+        "mysqlServerName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the MySQL Server."
+            }
+        },
+        "mysqlDatabaseName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the MySQL Database."
+            }
+        },
+        "mysqlAdminUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "Admin username for the MySQL Server."
+            }
+        },
+        "mysqlAdminPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Admin password for the MySQL Server."
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2018-02-01",
+            "name": "[parameters('appServicePlanName')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "[parameters('skuName')]",
+                "capacity": "[parameters('skuCapacity')]"
+            },
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2018-11-01",
+            "name": "[parameters('siteName')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]",
+                "[concat('Microsoft.Web/serverfarms/', parameters('appServicePlanName'))]"
+            ],
+            "properties": {
+                "name": "[parameters('siteName')]",
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]",
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                            "value": "10.14.1"
+                        },
+                        {
+                            "name": "MYSQL_HOST",
+                            "value": "[concat(parameters('mysqlServerName'), '.mysql.database.azure.com')]"
+                        },
+                        {
+                            "name": "MYSQL_USER",
+                            "value": "[parameters('mysqlAdminUsername')]"
+                        },
+                        {
+                            "name": "MYSQL_PASSWORD",
+                            "value": "[parameters('mysqlAdminPassword')]"
+                        },
+                        {
+                            "name": "MYSQL_DATABASE",
+                            "value": "[parameters('mysqlDatabaseName')]"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.DBforMySQL/servers",
+            "apiVersion": "2017-12-01",
+            "name": "[parameters('mysqlServerName')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "B_Gen5_1",
+                "tier": "Basic",
+                "capacity": 1
+            },
+            "properties": {
+                "sslEnforcement": "Enabled",
+                "administratorLogin": "[parameters('mysqlAdminUsername')]",
+                "administratorLoginPassword": "[parameters('mysqlAdminPassword')]"
+            }
+        },
+        {
+            "type": "Microsoft.DBforMySQL/servers/databases",
+            "apiVersion": "2017-12-01",
+            "name": "[concat(parameters('mysqlServerName'), '/', parameters('mysqlDatabaseName'))]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforMySQL/servers', parameters('mysqlServerName'))]"
+            ],
+            "properties": {
+                "charset": "utf8mb4",
+                "collation": "utf8mb4_general_ci"
+            }
+        }
+    ]
+}
+
