@@ -34,10 +34,11 @@
             "type": "Microsoft.Web/serverfarms",
             "apiVersion": "2022-03-01",
             "location": "[resourceGroup().location]",
+            "kind": "linux",
             "properties": {
                 "name": "[variables('hostingPlanName')]",
                 "workerSize": "1",
-                "hostingEnvironment": "linux",
+                "hostingEnvironment": "",
                 "numberOfWorkers": 0
             },
             "sku": {
@@ -50,13 +51,14 @@
             "type": "Microsoft.Web/sites",
             "apiVersion": "2015-02-01",
             "location": "[resourceGroup().location]",
+            "kind": "linux",
             "dependsOn": [
                 "[concat('Microsoft.Web/serverfarms/', variables('hostingPlanName'))]"
             ],
             "properties": {
                 "name": "[variables('siteName')]",
                 "serverFarmId": "[variables('hostingPlanName')]",
-                "hostingEnvironment": "linux"
+                "hostingEnvironment": ""
             }
         },
         {
