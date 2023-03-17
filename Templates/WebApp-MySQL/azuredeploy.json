@@ -1,5 +1,5 @@
 {
-    "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "Database Administrator Login": {
@@ -32,12 +32,12 @@
         {
             "name": "[variables('hostingPlanName')]",
             "type": "Microsoft.Web/serverfarms",
-            "apiVersion": "2016-09-01",
+            "apiVersion": "2022-03-01",
             "location": "[resourceGroup().location]",
             "properties": {
                 "name": "[variables('hostingPlanName')]",
                 "workerSize": "1",
-                "hostingEnvironment": "",
+                "hostingEnvironment": "linux",
                 "numberOfWorkers": 0
             },
             "sku": {
@@ -56,7 +56,7 @@
             "properties": {
                 "name": "[variables('siteName')]",
                 "serverFarmId": "[variables('hostingPlanName')]",
-                "hostingEnvironment": ""
+                "hostingEnvironment": "linux"
             }
         },
         {
