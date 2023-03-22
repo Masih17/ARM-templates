@@ -50,22 +50,26 @@
         {
             "name": "[variables('siteName')]",
             "type": "Microsoft.Web/sites",
-            "apiVersion": "2015-02-01",
+            "apiVersion": "2021-02-01",
             "location": "[resourceGroup().location]",
-            "kind": "app,linux",
+            "kind": "linux",
             "dependsOn": [
                 "[concat('Microsoft.Web/serverfarms/', variables('hostingPlanName'))]"
             ],
             "properties": {
                 "name": "[variables('siteName')]",
                 "serverFarmId": "[variables('hostingPlanName')]",
-                "hostingEnvironment": ""
+                "hostingEnvironment": "",
+                "linuxFxVersion": "JAVA|17-java17",
+                "ftpsState": "FtpsOnly",
+                "minTlsVersion": "1.2",
+                "scmMinTlsVersion": "1.2"
             }
         },
         {
             "name": "[concat(variables('siteName'), '/connectionstrings')]",
             "type": "Microsoft.Web/sites/config",
-            "apiVersion": "2015-04-01",
+            "apiVersion": "2021-02-01",
             "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[resourceId('Microsoft.DBforMySQL/servers', variables('serverName'))]"
@@ -84,6 +88,7 @@
             "location": "[resourceGroup().location]",
             "kind": "",
             "properties": {
+                "createMode": "Default",
                 "version": "[variables('databaseVersion')]",
                 "administratorLogin": "[parameters('Database Administrator Login')]",
                 "administratorLoginPassword": "[parameters('Database Administrator Login Password')]",
