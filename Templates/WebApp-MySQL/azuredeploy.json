@@ -64,7 +64,7 @@
                 "ftpsState": "FtpsOnly",
                 "minTlsVersion": "1.2",
                 "scmMinTlsVersion": "1.2",
-                    "siteConfig": {
+                "siteConfig": {
                     "numberOfWorkers": 1,
                     "linuxFxVersion": "JAVA|17-java17",
                     "acrUseManagedIdentityCreds": false,
